@@ -105,7 +105,7 @@ public class EmailQueueService : BackgroundService
 
     // Retry de PATCH a SAP para emails que YA se enviaron al cliente pero SAP no se actualizó.
     // Esto pasa cuando el SL está caído, sesión expirada, network blip, etc.
-    // Si no se reintenta, OINV.U_EXX_FE_MailEnviado queda vacío para esos docs.
+    // Si no se reintenta, OINV.U_FE_MailEnviado queda vacío para esos docs.
     private async Task ProcesarSapUpdatesPendientesAsync(SapServiceLayerConfig sapConfig, CancellationToken ct)
     {
         const int MaxSapIntentos = 10;
@@ -231,7 +231,7 @@ public class EmailQueueService : BackgroundService
         return null;
     }
 
-    // Actualiza U_EXX_FE_MailEnviado y U_EXX_FE_MailError en SAP.
+    // Actualiza U_FE_MailEnviado y U_FE_MailError en SAP.
     // Solo aplica para Facturas (1/4 → Invoices) y Notas de Crédito (5/6 → CreditNotes).
     // Retorna true si el PATCH fue exitoso, false si falló (caller decide qué hacer).
     private async Task<(bool ok, string? error)> ActualizarMailSAP(SAPServiceLayer sapService, int docEntry,
@@ -248,8 +248,8 @@ public class EmailQueueService : BackgroundService
 
         var body = new
         {
-            U_EXX_FE_MailEnviado = enviado ? "SI" : "NO",
-            U_EXX_FE_MailError   = mensajeError
+            U_FE_MailEnviado = enviado ? "SI" : "NO",
+            U_FE_MailError   = mensajeError
         };
 
         string endpoint = (tipoDocumento == "1" || tipoDocumento == "4")

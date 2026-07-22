@@ -389,9 +389,9 @@ public class SAPCDCService : BackgroundService
                 string? dTelRec = factura.BusinessPartner.dTelRec;
                 string? dCelRec = factura.BusinessPartner.dCelRec;
                 string? dEmailRec = factura.BusinessPartner.dEmailRec;
-                string iTiDE = factura.U_CDOC;
-                string dEst = factura.U_EST;
-                string dPunExp = factura.U_PDE;
+                string iTiDE = factura.U_CENT_TIPO_DOC;
+                string dEst = factura.U_CENT_EST;
+                string dPunExp = factura.U_CENT_PE;
                 string dNumDoc = factura.FolioNum.PadLeft(7, '0');
                 //        string dFecha = factura.DocDate.Replace("-", ""); // Fecha del documento para usar en el CDC
                 string iTipTra = factura.iTipTra;
@@ -399,7 +399,7 @@ public class SAPCDCService : BackgroundService
                 int iCondOpe = factura.iCondOpe == -1 ? 1 : 2;
                 int iCondCred = factura.iCondCred == 1 ? 1 : 2;
                 DateTime dFeIniT = DateTime.ParseExact(factura.U_FITE, "yyyy-MM-dd", null);
-                int dNumTim = factura.U_TIM;
+                int dNumTim = factura.U_CENT_TIMB;
                 int iTipEmi = 1; // Siempre fijo en 1
 
                 DateTime fecha = DateTime.ParseExact(factura.DocDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -545,7 +545,7 @@ public class SAPCDCService : BackgroundService
                 string cdc = GenerarCDC.GenerarCodigoCDC(iTiDE, _empresaInfo.Ruc, _empresaInfo.Dv.ToString(), dEst, dPunExp, dNumDoc, _empresaInfo.TipoContribuyente.ToString(), fechaFormatoCDC, iTipEmi.ToString(), dCodSeg);
                 // Se extraer el Dígito Verificador (dv)
                 int dv = int.Parse(cdc.Substring(cdc.Length - 1)); // Último carácter del CDC
-                string xmlTiDE = Convert.ToInt32(factura.U_CDOC).ToString();
+                string xmlTiDE = Convert.ToInt32(factura.U_CENT_TIPO_DOC).ToString();
 
                 _logger.LogInformation($"CDC generado y actualizado: {cdc}");
 
@@ -614,7 +614,7 @@ public class SAPCDCService : BackgroundService
             // Si quedó un lote incompleto
             if (loteDocumentos.Count > 0)
             {
-                await _envioService.EnviarDocumentoAsincronico(loteDocumentos, tipoDocumentoLote, facturas.First().U_CDOC);
+                await _envioService.EnviarDocumentoAsincronico(loteDocumentos, tipoDocumentoLote, facturas.First().U_CENT_TIPO_DOC);
                 _logger.LogInformation($"Lote final de {loteDocumentos.Count} documento(s) enviado.");
             }*/
         }
@@ -646,11 +646,11 @@ public class SAPCDCService : BackgroundService
             {
                 try
                 {
-                    string cdc = factura.U_EXX_FE_CDC;
+                    string cdc = factura.U_FE_CDC;
                     string archivoXml = $"Documento_{cdc}.xml";
                     string rutaXmlFirmado = Path.Combine(xmlDir, archivoXml);
 
-                    if (factura.U_EXX_FE_Estado == "NAU" || factura.U_EXX_FE_CODERR == "0301")
+                    if (factura.U_FE_Estado == "NAU" || factura.U_FE_CODERR == "0301")
                     {
                         try
                         {
@@ -676,13 +676,13 @@ public class SAPCDCService : BackgroundService
 
                         await _envioService.EnviarDocumentoAsincronico(
                             new List<(int, string, string)> { (factura.DocEntry, cdc, xmlFirmado) },
-                            factura.U_CDOC,
-                            factura.U_CDOC
+                            factura.U_CENT_TIPO_DOC,
+                            factura.U_CENT_TIPO_DOC
                         );
 
                         _logger.LogInformation($"Documento con CDC {cdc} reenviado a SIFEN.");
                     }
-                    else if (factura.U_EXX_FE_Estado == "ENV" || factura.U_EXX_FE_Estado == "OFF")
+                    else if (factura.U_FE_Estado == "ENV" || factura.U_FE_Estado == "OFF")
                     {
                         if (!File.Exists(rutaXmlFirmado))
                         {
@@ -723,14 +723,14 @@ public class SAPCDCService : BackgroundService
                         await _envioService.ConsultarEstadoLoteAsync(
                             dId, lote,
                             new List<(int, string, string)> { (factura.DocEntry, cdc, xmlFirmado) },
-                            factura.U_CDOC,
+                            factura.U_CENT_TIPO_DOC,
                             DateTime.Now, DateTime.Now
                         );
                     }
                 }
                 catch (Exception exDoc)
                 {
-                    _logger.LogError($"Error al procesar factura pendiente CDC {factura.U_EXX_FE_CDC}: {exDoc.Message}");
+                    _logger.LogError($"Error al procesar factura pendiente CDC {factura.U_FE_CDC}: {exDoc.Message}");
                 }
             }
         }
@@ -790,12 +790,12 @@ public class SAPCDCService : BackgroundService
                 string DescPais = notaCredito.BusinessPartner.dDesPaisRe;
                 string dDirRec = notaCredito.BusinessPartner.dDirRec;
                 int? dNumCasRec = notaCredito.BusinessPartner.dNumCasRec;
-                string iTiDE = notaCredito.U_CDOC == "03" ? "05" : notaCredito.U_CDOC;
-                string dEst = notaCredito.U_EST;
-                string dPunExp = notaCredito.U_PDE;
+                string iTiDE = notaCredito.U_CENT_TIPO_DOC == "03" ? "05" : notaCredito.U_CENT_TIPO_DOC;
+                string dEst = notaCredito.U_CENT_EST;
+                string dPunExp = notaCredito.U_CENT_PE;
                 string dNumDoc = notaCredito.FolioNum.PadLeft(7, '0');
                 DateTime dFeIniT = DateTime.ParseExact(notaCredito.U_FITE, "yyyy-MM-dd", null);
-                int dNumTim = notaCredito.U_TIM;
+                int dNumTim = notaCredito.U_CENT_TIMB;
                 int iTipEmi = 1; // Siempre fijo en 1
 
                 int iMotEmi = notaCredito.iMotEmi;
@@ -807,7 +807,7 @@ public class SAPCDCService : BackgroundService
                 string? dCdCDERef = null;
                 int? dNTimDI = null;
                 DateTime? dFecEmiDI = null;
-                int? U_TIM = notaCredito.timbradoSAP;
+                int? U_CENT_TIMB = notaCredito.timbradoSAP;
 
                 string notacreditoReferencia = notaCredito.U_NUMFC;
 
@@ -821,7 +821,7 @@ public class SAPCDCService : BackgroundService
                         string? PDE = partesNotaCredito.Length > 1 ? partesNotaCredito[1] : null;
                         string? Folio = partesNotaCredito.Length > 2 ? partesNotaCredito[2] : null;
 
-                        var datos = await _notaCreditoService.ObtenerCDCFactura(EST, PDE, Folio, rucCompleto, U_TIM);
+                        var datos = await _notaCreditoService.ObtenerCDCFactura(EST, PDE, Folio, rucCompleto, U_CENT_TIMB);
 
                         dCdCDERef = datos.dCdCDERef;
 
@@ -833,7 +833,7 @@ public class SAPCDCService : BackgroundService
                         dNumDocAso = partesNotaCredito.Length > 2 ? partesNotaCredito[2] : null;
                         iTipoDocAso = 1;
 
-                        var datos = await _notaCreditoService.ObtenerCDCFactura(dEstDocAso, dPExpDocAso, dNumDocAso, rucCompleto, U_TIM);
+                        var datos = await _notaCreditoService.ObtenerCDCFactura(dEstDocAso, dPExpDocAso, dNumDocAso, rucCompleto, U_CENT_TIMB);
 
                         dNTimDI = datos.dNTimDI;
                         dFecEmiDI = datos.dFecEmiDI;
@@ -1041,7 +1041,7 @@ public class SAPCDCService : BackgroundService
             // Si quedó un lote incompleto
             if (loteDocumentos.Count > 0)
             {
-                await _envioService.EnviarDocumentoAsincronico(loteDocumentos, tipoDocumentoLote, notasCredito.First().U_CDOC);
+                await _envioService.EnviarDocumentoAsincronico(loteDocumentos, tipoDocumentoLote, notasCredito.First().U_CENT_TIPO_DOC);
                 _logger.LogInformation($"Lote final de {loteDocumentos.Count} documento(s) enviado.");
             }
         }
@@ -1075,11 +1075,11 @@ public class SAPCDCService : BackgroundService
             {
                 try
                 {
-                    string cdc = notaCredito.U_EXX_FE_CDC;
+                    string cdc = notaCredito.U_FE_CDC;
                     string archivoXml = $"Documento_{cdc}.xml";
                     string rutaXmlFirmado = Path.Combine(xmlDir, archivoXml);
 
-                    if (notaCredito.U_EXX_FE_Estado == "NAU")
+                    if (notaCredito.U_FE_Estado == "NAU")
                     {
                         try
                         {
@@ -1105,13 +1105,13 @@ public class SAPCDCService : BackgroundService
 
                         await _envioService.EnviarDocumentoAsincronico(
                             new List<(int, string, string)> { (notaCredito.DocEntry, cdc, xmlFirmado) },
-                            notaCredito.U_CDOC,
-                            notaCredito.U_CDOC
+                            notaCredito.U_CENT_TIPO_DOC,
+                            notaCredito.U_CENT_TIPO_DOC
                         );
 
                         _logger.LogInformation($"Documento con CDC {cdc} reenviado a SIFEN.");
                     }
-                    else if (notaCredito.U_EXX_FE_Estado == "ENV" || notaCredito.U_EXX_FE_CODERR == "0361" || notaCredito.U_EXX_FE_CODERR == "0301")
+                    else if (notaCredito.U_FE_Estado == "ENV" || notaCredito.U_FE_CODERR == "0361" || notaCredito.U_FE_CODERR == "0301")
                     {
                         if (!File.Exists(rutaXmlFirmado))
                         {
@@ -1142,14 +1142,14 @@ public class SAPCDCService : BackgroundService
                         await _envioService.ConsultarEstadoLoteAsync(
                             dId, lote,
                             new List<(int, string, string)> { (notaCredito.DocEntry, cdc, xmlFirmado) },
-                            notaCredito.U_CDOC,
+                            notaCredito.U_CENT_TIPO_DOC,
                             DateTime.Now, DateTime.Now
                         );
                     }
                 }
                 catch (Exception exDoc)
                 {
-                    _logger.LogError($"Error al procesar Nota de crédito pendiente CDC {notaCredito.U_EXX_FE_CDC}: {exDoc.Message}");
+                    _logger.LogError($"Error al procesar Nota de crédito pendiente CDC {notaCredito.U_FE_CDC}: {exDoc.Message}");
                 }
             }
         }
@@ -1367,7 +1367,7 @@ public class SAPCDCService : BackgroundService
             hora = new TimeSpan(horas, minutos, segundos);
         }
         DateTime dFeEmiDE = fecha.Date.Add(hora);
-        string iTiDE = int.Parse(factura.U_CDOC).ToString(); // Sacamos el cero
+        string iTiDE = int.Parse(factura.U_CENT_TIPO_DOC).ToString(); // Sacamos el cero
 
         string dDirRec = factura.BusinessPartner.dDirRec;
         int? dNumCasRec = factura.BusinessPartner.dNumCasRec;
@@ -1379,9 +1379,9 @@ public class SAPCDCService : BackgroundService
             rutaArchivo: rutaXml,
             dCodSeg: dCodSeg,
             iTiDE: iTiDE,
-            dNumTim: factura.U_TIM,
-            dEst: factura.U_EST,
-            dPunExp: factura.U_PDE,
+            dNumTim: factura.U_CENT_TIMB,
+            dEst: factura.U_CENT_EST,
+            dPunExp: factura.U_CENT_PE,
             dNumDoc: factura.FolioNum.PadLeft(7, '0'),
             dFeIniT: DateTime.ParseExact(factura.U_FITE, "yyyy-MM-dd", null),
             dFeEmiDE: dFeEmiDE,
@@ -1567,10 +1567,10 @@ public class SAPCDCService : BackgroundService
             hora = new TimeSpan(horas, minutos, segundos);
         }
         DateTime dFeEmiDE = fecha.Date.Add(hora);
-        //int.Parse(notaCredito.U_CDOC).ToString();
+        //int.Parse(notaCredito.U_CENT_TIPO_DOC).ToString();
         string iTiDE = "";
 
-        if (notaCredito.U_CDOC == "3" || notaCredito.U_CDOC == "03")
+        if (notaCredito.U_CENT_TIPO_DOC == "3" || notaCredito.U_CENT_TIPO_DOC == "03")
         {
             iTiDE = "5";
         }
@@ -1585,7 +1585,7 @@ public class SAPCDCService : BackgroundService
         int? dNTimDI = null;
         DateTime? dFecEmiDI = null;
         string notacreditoReferencia = notaCredito.U_NUMFC;
-        int? U_TIM = notaCredito.timbradoSAP;
+        int? U_CENT_TIMB = notaCredito.timbradoSAP;
 
         if (!string.IsNullOrWhiteSpace(notacreditoReferencia))
         {
@@ -1597,7 +1597,7 @@ public class SAPCDCService : BackgroundService
                 string? PDE = partesNotaCredito.Length > 1 ? partesNotaCredito[1] : null;
                 string? Folio = partesNotaCredito.Length > 2 ? partesNotaCredito[2] : null;
 
-                var datos = await _notaCreditoService.ObtenerCDCFactura(EST, PDE, Folio, notaCredito.BusinessPartner.FederalTaxID, U_TIM);
+                var datos = await _notaCreditoService.ObtenerCDCFactura(EST, PDE, Folio, notaCredito.BusinessPartner.FederalTaxID, U_CENT_TIMB);
 
                 dCdCDERef = datos.dCdCDERef;
 
@@ -1609,7 +1609,7 @@ public class SAPCDCService : BackgroundService
                 dNumDocAso = partesNotaCredito.Length > 2 ? partesNotaCredito[2] : null;
                 iTipoDocAso = 1;
 
-                var datos = await _notaCreditoService.ObtenerCDCFactura(dEstDocAso, dPExpDocAso, dNumDocAso, notaCredito.BusinessPartner.FederalTaxID, U_TIM);
+                var datos = await _notaCreditoService.ObtenerCDCFactura(dEstDocAso, dPExpDocAso, dNumDocAso, notaCredito.BusinessPartner.FederalTaxID, U_CENT_TIMB);
 
                 dNTimDI = datos.dNTimDI;
                 dFecEmiDI = datos.dFecEmiDI;
@@ -1627,9 +1627,9 @@ public class SAPCDCService : BackgroundService
             rutaArchivo: rutaXml,
             dCodSeg: dCodSeg,
             iTiDE: iTiDE,
-            dNumTim: notaCredito.U_TIM,
-            dEst: notaCredito.U_EST,
-            dPunExp: notaCredito.U_PDE,
+            dNumTim: notaCredito.U_CENT_TIMB,
+            dEst: notaCredito.U_CENT_EST,
+            dPunExp: notaCredito.U_CENT_PE,
             dNumDoc: notaCredito.FolioNum.PadLeft(7, '0'),
             dFeIniT: DateTime.ParseExact(notaCredito.U_FITE, "yyyy-MM-dd", null),
             dFeEmiDE: dFeEmiDE,
@@ -1743,11 +1743,11 @@ public class SAPCDCService : BackgroundService
                 string? dEmailRec = notaRemision.BusinessPartner.dEmailRec;
 
                 string iTiDE = "7";
-                string dEst = notaRemision.U_EST;
-                string dPunExp = notaRemision.U_PDE;
+                string dEst = notaRemision.U_CENT_EST;
+                string dPunExp = notaRemision.U_CENT_PE;
                 string dNumDoc = notaRemision.FolioNum.PadLeft(7, '0');
                 DateTime dFeIniT = DateTime.ParseExact(notaRemision.U_FITE, "yyyy-MM-dd", null);
-                int dNumTim = notaRemision.U_TIM;
+                int dNumTim = notaRemision.U_CENT_TIMB;
                 int iTipEmi = 1;
 
                 DateTime fecha = DateTime.ParseExact(notaRemision.DocDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -1916,7 +1916,7 @@ public class SAPCDCService : BackgroundService
 
             if (loteDocumentos.Count > 0)
             {
-                await _envioService.EnviarDocumentoAsincronico(loteDocumentos, tipoDocumentoLote, notasRemision.First().U_CDOC);
+                await _envioService.EnviarDocumentoAsincronico(loteDocumentos, tipoDocumentoLote, notasRemision.First().U_CENT_TIPO_DOC);
                 _logger.LogInformation($"Lote final de {loteDocumentos.Count} documento(s) enviado.");
             }
         }
@@ -1949,11 +1949,11 @@ public class SAPCDCService : BackgroundService
             {
                 try
                 {
-                    string cdc = notaRemision.U_EXX_FE_CDC;
+                    string cdc = notaRemision.U_FE_CDC;
                     string archivoXml = $"Documento_{cdc}.xml";
                     string rutaXmlFirmado = Path.Combine(xmlDir, archivoXml);
 
-                    if (notaRemision.U_EXX_FE_Estado == "NAU")
+                    if (notaRemision.U_FE_Estado == "NAU")
                     {
                         try
                         {
@@ -1979,13 +1979,13 @@ public class SAPCDCService : BackgroundService
 
                         await _envioService.EnviarDocumentoAsincronico(
                             new List<(int, string, string)> { (notaRemision.DocEntry, cdc, xmlFirmado) },
-                            notaRemision.U_CDOC,
-                            notaRemision.U_CDOC
+                            notaRemision.U_CENT_TIPO_DOC,
+                            notaRemision.U_CENT_TIPO_DOC
                         );
 
                         _logger.LogInformation($"Documento con CDC {cdc} reenviado a SIFEN.");
                     }
-                    else if (notaRemision.U_EXX_FE_Estado == "ENV" || notaRemision.U_EXX_FE_CODERR == "0361" || notaRemision.U_EXX_FE_CODERR == "0301")
+                    else if (notaRemision.U_FE_Estado == "ENV" || notaRemision.U_FE_CODERR == "0361" || notaRemision.U_FE_CODERR == "0301")
                     {
                         if (!File.Exists(rutaXmlFirmado))
                         {
@@ -2016,14 +2016,14 @@ public class SAPCDCService : BackgroundService
                         await _envioService.ConsultarEstadoLoteAsync(
                             dId, lote,
                             new List<(int, string, string)> { (notaRemision.DocEntry, cdc, xmlFirmado) },
-                            notaRemision.U_CDOC,
+                            notaRemision.U_CENT_TIPO_DOC,
                             DateTime.Now, DateTime.Now
                         );
                     }
                 }
                 catch (Exception exDoc)
                 {
-                    _logger.LogError($"Error al procesar Nota de remisión pendiente CDC {notaRemision.U_EXX_FE_CDC}: {exDoc.Message}");
+                    _logger.LogError($"Error al procesar Nota de remisión pendiente CDC {notaRemision.U_FE_CDC}: {exDoc.Message}");
                 }
             }
         }
@@ -2093,9 +2093,9 @@ public class SAPCDCService : BackgroundService
             rutaArchivo: rutaXml,
             dCodSeg: dCodSeg,
             iTiDE: "7",
-            dNumTim: notaRemision.U_TIM,
-            dEst: notaRemision.U_EST,
-            dPunExp: notaRemision.U_PDE,
+            dNumTim: notaRemision.U_CENT_TIMB,
+            dEst: notaRemision.U_CENT_EST,
+            dPunExp: notaRemision.U_CENT_PE,
             dNumDoc: notaRemision.FolioNum.PadLeft(7, '0'),
             dFeIniT: DateTime.ParseExact(notaRemision.U_FITE, "yyyy-MM-dd", null),
             dFeEmiDE: dFeEmiDE,

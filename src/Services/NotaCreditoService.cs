@@ -16,13 +16,13 @@ public class NotaCreditoService
     public async Task<List<NotaCredito>> GetNotaCreditoSinCDC()
     {
         string queryDocumento = "$crossjoin(CreditNotes,BusinessPartners,Currencies) " +
-            "?$expand=CreditNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_EXX_FE_CDC,U_CDOC,CardCode,U_EST,U_PDE,U_TIM,U_FITE,FolioNumber,DocDate,U_EXX_FE_CODERR,U_EXX_FE_IndPresencia,PaymentGroupCode,NumberOfInstallments," +
-            "U_NUMFC,U_TIMFC,U_DASO,U_EXX_FE_MotEmision,Comments)," +
+            "?$expand=CreditNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_FE_CODERR,U_FE_IndPresencia,PaymentGroupCode,NumberOfInstallments," +
+            "U_NUMFC,U_TIMFC,U_DASO,U_FE_MotEmision,Comments)," +
             "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,Phone1,Cellular,EmailAddress), " +
             "Currencies($select=Code,Name,DocumentsCode) " +
             "&$filter=CreditNotes/CardCode eq BusinessPartners/CardCode and " +
-            "CreditNotes/DocCurrency eq Currencies/Code and (CreditNotes/U_EXX_FE_CDC eq null or CreditNotes/U_EXX_FE_CDC eq '') and CreditNotes/U_EXX_FE_Estado eq 'NEN' and CreditNotes/Cancelled eq 'tNO' and " +
-            "CreditNotes/DocDate ge '20260201' and CreditNotes/FolioNumber ne null and CreditNotes/U_DOCD eq 'S'";
+            "CreditNotes/DocCurrency eq Currencies/Code and (CreditNotes/U_FE_CDC eq null or CreditNotes/U_FE_CDC eq '') and CreditNotes/U_FE_Estado eq 'NEN' and CreditNotes/Cancelled eq 'tNO' and " +
+            "CreditNotes/DocDate ge '20260201' and CreditNotes/FolioNumber ne null and CreditNotes/U_CENT_DECLARABLE eq 'S'";
 
         var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, queryDocumento, _logger, "Error en la consulta a SAP");
         if (string.IsNullOrEmpty(jsonResponse))
@@ -104,18 +104,18 @@ public class NotaCreditoService
             {
                 DocEntry = primeraEntrada.CreditNotes.DocEntry,
                 DocType = primeraEntrada.CreditNotes.DocType,
-                U_EXX_FE_CDC = primeraEntrada.CreditNotes.U_EXX_FE_CDC ?? "",
-                U_CDOC = primeraEntrada.CreditNotes.U_CDOC?.PadLeft(2, '0'),
+                U_FE_CDC = primeraEntrada.CreditNotes.U_FE_CDC ?? "",
+                U_CENT_TIPO_DOC = primeraEntrada.CreditNotes.U_CENT_TIPO_DOC?.PadLeft(2, '0'),
                 CardCode = primeraEntrada.CreditNotes.CardCode ?? "",
-                U_EST = primeraEntrada.CreditNotes.U_EST ?? "",
-                U_PDE = primeraEntrada.CreditNotes.U_PDE ?? "",
+                U_CENT_EST = primeraEntrada.CreditNotes.U_CENT_EST ?? "",
+                U_CENT_PE = primeraEntrada.CreditNotes.U_CENT_PE ?? "",
                 FolioNum = primeraEntrada.CreditNotes.FolioNumber ?? "",
                 DocDate = primeraEntrada.CreditNotes.DocDate,
                 DocTime = await ObtenerDocTimePorDocEntry(docEntry),
-                U_TIM = primeraEntrada.CreditNotes.U_TIM,
+                U_CENT_TIMB = primeraEntrada.CreditNotes.U_CENT_TIMB,
                 U_FITE = primeraEntrada.CreditNotes.U_FITE,
                 dTiCam = primeraEntrada.CreditNotes.DocRate,
-                iMotEmi = primeraEntrada.CreditNotes.U_EXX_FE_MotEmision,
+                iMotEmi = primeraEntrada.CreditNotes.U_FE_MotEmision,
                 iTipDocAso = primeraEntrada.CreditNotes.U_DASO,
                 U_NUMFC = primeraEntrada.CreditNotes.U_NUMFC,
                 timbradoSAP = primeraEntrada.CreditNotes.U_TIMFC,
@@ -344,7 +344,7 @@ public class NotaCreditoService
     {
         try
         {
-            string query = $"Invoices?$select=DocDate,U_TIM,U_EXX_FE_CDC&$filter=FederalTaxID eq '{rucCompleto}' and U_EST eq '{dEstDocAso}' and U_PDE eq '{dPExpDocAso}' and FolioNumber eq {dNumDocAso} and U_TIM eq '{timbradoSAP}'";
+            string query = $"Invoices?$select=DocDate,U_CENT_TIMB,U_FE_CDC&$filter=FederalTaxID eq '{rucCompleto}' and U_CENT_EST eq '{dEstDocAso}' and U_CENT_PE eq '{dPExpDocAso}' and FolioNumber eq {dNumDocAso} and U_CENT_TIMB eq '{timbradoSAP}'";
             var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, query, _logger, "Error al obtener datos de factura referenciada");
 
             if (string.IsNullOrWhiteSpace(jsonResponse))
@@ -362,8 +362,8 @@ public class NotaCreditoService
 
             var factura = valueArray[0];
 
-            string dCdCDERef = factura.ContainsKey("U_EXX_FE_CDC") ? factura["U_EXX_FE_CDC"]?.ToString() : null;
-            int? dNTimDI = factura.ContainsKey("U_TIM") ? int.Parse(factura["U_TIM"].ToString()) : null;
+            string dCdCDERef = factura.ContainsKey("U_FE_CDC") ? factura["U_FE_CDC"]?.ToString() : null;
+            int? dNTimDI = factura.ContainsKey("U_CENT_TIMB") ? int.Parse(factura["U_CENT_TIMB"].ToString()) : null;
 
             DateTime? dFecEmiDI = null;
             if (factura.ContainsKey("DocDate"))
@@ -385,15 +385,15 @@ public class NotaCreditoService
     public async Task<List<NotaCredito>> GetNotaCreditoSinAutorizar()
     {
         string queryDocumento = "$crossjoin(CreditNotes,BusinessPartners,Currencies) " +
-            "?$expand=CreditNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_EXX_FE_CDC,U_CDOC,CardCode,U_EST,U_PDE,U_TIM,U_FITE,FolioNumber,DocDate,U_EXX_FE_Estado,U_EXX_FE_CODERR,U_EXX_FE_IndPresencia,PaymentGroupCode,NumberOfInstallments,U_NUMFC,U_TIMFC,U_DASO,U_EXX_FE_MotEmision,Comments)," +
+            "?$expand=CreditNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_FE_Estado,U_FE_CODERR,U_FE_IndPresencia,PaymentGroupCode,NumberOfInstallments,U_NUMFC,U_TIMFC,U_DASO,U_FE_MotEmision,Comments)," +
             "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion), " +
             "Currencies($select=Code,Name,DocumentsCode) " +
             "&$filter=CreditNotes/CardCode eq BusinessPartners/CardCode and " +
             "CreditNotes/DocCurrency eq Currencies/Code and " +
             "CreditNotes/FolioNumber ne null and " +
             "CreditNotes/DocDate ge '20260201' and " +
-            "CreditNotes/U_EXX_FE_Estado ne 'AUT' and CreditNotes/Cancelled eq 'tNO' and " +
-            "CreditNotes/U_EXX_FE_CDC ne null and CreditNotes/U_EXX_FE_CDC ne '' and CreditNotes/U_DOCD eq 'S' ";
+            "CreditNotes/U_FE_Estado ne 'AUT' and CreditNotes/Cancelled eq 'tNO' and " +
+            "CreditNotes/U_FE_CDC ne null and CreditNotes/U_FE_CDC ne '' and CreditNotes/U_CENT_DECLARABLE eq 'S' ";
 
         var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, queryDocumento, _logger, "Error en la consulta a SAP");
         if (string.IsNullOrEmpty(jsonResponse))
@@ -475,20 +475,20 @@ public class NotaCreditoService
             {
                 DocEntry = primeraEntrada.CreditNotes.DocEntry,
                 DocType = primeraEntrada.CreditNotes.DocType,
-                U_EXX_FE_CDC = primeraEntrada.CreditNotes.U_EXX_FE_CDC ?? "",
-                U_EXX_FE_Estado = primeraEntrada.CreditNotes.U_EXX_FE_Estado,
-                U_EXX_FE_CODERR = primeraEntrada.CreditNotes.U_EXX_FE_CODERR,
-                U_CDOC = primeraEntrada.CreditNotes.U_CDOC?.PadLeft(2, '0'),
+                U_FE_CDC = primeraEntrada.CreditNotes.U_FE_CDC ?? "",
+                U_FE_Estado = primeraEntrada.CreditNotes.U_FE_Estado,
+                U_FE_CODERR = primeraEntrada.CreditNotes.U_FE_CODERR,
+                U_CENT_TIPO_DOC = primeraEntrada.CreditNotes.U_CENT_TIPO_DOC?.PadLeft(2, '0'),
                 CardCode = primeraEntrada.CreditNotes.CardCode ?? "",
-                U_EST = primeraEntrada.CreditNotes.U_EST ?? "",
-                U_PDE = primeraEntrada.CreditNotes.U_PDE ?? "",
+                U_CENT_EST = primeraEntrada.CreditNotes.U_CENT_EST ?? "",
+                U_CENT_PE = primeraEntrada.CreditNotes.U_CENT_PE ?? "",
                 FolioNum = primeraEntrada.CreditNotes.FolioNumber ?? "",
                 DocDate = primeraEntrada.CreditNotes.DocDate,
                 DocTime = await ObtenerDocTimePorDocEntry(docEntry),
-                U_TIM = primeraEntrada.CreditNotes.U_TIM,
+                U_CENT_TIMB = primeraEntrada.CreditNotes.U_CENT_TIMB,
                 U_FITE = primeraEntrada.CreditNotes.U_FITE,
                 dTiCam = primeraEntrada.CreditNotes.DocRate,
-                iMotEmi = primeraEntrada.CreditNotes.U_EXX_FE_MotEmision,
+                iMotEmi = primeraEntrada.CreditNotes.U_FE_MotEmision,
                 iTipDocAso = primeraEntrada.CreditNotes.U_DASO,
                 U_NUMFC = primeraEntrada.CreditNotes.U_NUMFC,
                 timbradoSAP = primeraEntrada.CreditNotes.U_TIMFC,

@@ -16,13 +16,13 @@ public class FacturaService
     public async Task<List<Factura>> GetFacturasSinCDC()
     {
         string queryDocumento = "$crossjoin(Invoices,BusinessPartners,Currencies)" +
-            "?$expand=Invoices($select=DocEntry,DocRate,DocType,DocCurrency,U_EXX_FE_CDC,U_CDOC,CardCode,U_EST,U_PDE,U_TIM,U_FITE,FolioNumber,DocDate,U_EXX_FE_TipoTran,U_EXX_FE_IndPresencia,PaymentGroupCode," +
+            "?$expand=Invoices($select=DocEntry,DocRate,DocType,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_iTipTra,U_FE_IndPresencia,PaymentGroupCode," +
             "NumberOfInstallments,Comments)," +
             "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,U_CRID,Phone1,Cellular,EmailAddress)," +
             "Currencies($select=Code,Name,DocumentsCode)" +
             "&$filter=Invoices/CardCode eq BusinessPartners/CardCode and " +
             "Invoices/DocCurrency eq Currencies/Code and " +
-            "(Invoices/U_EXX_FE_CDC eq null or Invoices/U_EXX_FE_CDC eq '') and Invoices/U_DOCD eq 'S' and Invoices/U_EXX_FE_Estado eq 'NEN' and Invoices/Cancelled eq 'tNO' and " +
+            "(Invoices/U_FE_CDC eq null or Invoices/U_FE_CDC eq '') and Invoices/U_CENT_DECLARABLE eq 'S' and Invoices/U_FE_Estado eq 'NEN' and Invoices/Cancelled eq 'tNO' and " +
             "Invoices/DocDate ge '20260301' and Invoices/FolioNumber ne null";
         //    "Invoices/DocEntry eq 3480";
 
@@ -106,18 +106,18 @@ public class FacturaService
             {
                 DocEntry = primeraEntrada.Invoices.DocEntry,
                 DocType = primeraEntrada.Invoices.DocType,
-                U_EXX_FE_CDC = primeraEntrada.Invoices.U_EXX_FE_CDC ?? "",
-                U_CDOC = primeraEntrada.Invoices.U_CDOC?.PadLeft(2, '0'),
+                U_FE_CDC = primeraEntrada.Invoices.U_FE_CDC ?? "",
+                U_CENT_TIPO_DOC = primeraEntrada.Invoices.U_CENT_TIPO_DOC?.PadLeft(2, '0'),
                 CardCode = primeraEntrada.Invoices.CardCode ?? "",
-                U_EST = primeraEntrada.Invoices.U_EST ?? "",
-                U_PDE = primeraEntrada.Invoices.U_PDE ?? "",
+                U_CENT_EST = primeraEntrada.Invoices.U_CENT_EST ?? "",
+                U_CENT_PE = primeraEntrada.Invoices.U_CENT_PE ?? "",
                 FolioNum = primeraEntrada.Invoices.FolioNumber ?? "",
                 DocDate = primeraEntrada.Invoices.DocDate,
                 DocTime = await ObtenerDocTimePorDocEntry(docEntry),
-                U_TIM = primeraEntrada.Invoices.U_TIM,
+                U_CENT_TIMB = primeraEntrada.Invoices.U_CENT_TIMB,
                 U_FITE = primeraEntrada.Invoices.U_FITE,
-                iTipTra = primeraEntrada.Invoices.U_EXX_FE_TipoTran,
-                iIndPres = primeraEntrada.Invoices.U_EXX_FE_IndPresencia,
+                iTipTra = primeraEntrada.Invoices.U_iTipTra,
+                iIndPres = primeraEntrada.Invoices.U_FE_IndPresencia,
                 iCondOpe = primeraEntrada.Invoices.PaymentGroupCode,
                 iCondCred = primeraEntrada.Invoices.NumberOfInstallments,
                 dTiCam = primeraEntrada.Invoices.DocRate,
@@ -628,16 +628,16 @@ public class FacturaService
     public async Task<List<Factura>> GetFacturasSinAutorizar()
     {
         string queryDocumento = "$crossjoin(Invoices,BusinessPartners,Currencies)" +
-            "?$expand=Invoices($select=DocEntry,DocRate,DocType,DocCurrency,U_EXX_FE_CDC,U_CDOC,CardCode,U_EXX_FE_Estado,U_EST,U_PDE,U_TIM,U_FITE,FolioNumber,DocDate,U_EXX_FE_TipoTran,U_EXX_FE_IndPresencia,PaymentGroupCode," +
-            "NumberOfInstallments,U_EXX_FE_CODERR,Comments)," +
+            "?$expand=Invoices($select=DocEntry,DocRate,DocType,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_FE_Estado,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_iTipTra,U_FE_IndPresencia,PaymentGroupCode," +
+            "NumberOfInstallments,U_FE_CODERR,Comments)," +
             "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,U_CRID,Phone1,Cellular,EmailAddress)," +
             "Currencies($select=Code,Name,DocumentsCode)" +
             "&$filter=Invoices/CardCode eq BusinessPartners/CardCode and " +
             "Invoices/DocCurrency eq Currencies/Code and " +
             "Invoices/FolioNumber ne null and " +
             "Invoices/DocDate ge '20260201' and " +
-            "Invoices/U_EXX_FE_Estado ne 'AUT' and Invoices/U_DOCD eq 'S' and Invoices/Cancelled eq 'tNO' and " +
-            "Invoices/U_EXX_FE_CDC ne null and Invoices/U_EXX_FE_CDC ne '' ";
+            "Invoices/U_FE_Estado ne 'AUT' and Invoices/U_CENT_DECLARABLE eq 'S' and Invoices/Cancelled eq 'tNO' and " +
+            "Invoices/U_FE_CDC ne null and Invoices/U_FE_CDC ne '' ";
         //    "Invoices/DocEntry eq 3480";
 
         var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, queryDocumento, _logger, "Error en la consulta a SAP");
@@ -720,20 +720,20 @@ public class FacturaService
             {
                 DocEntry = primeraEntrada.Invoices.DocEntry,
                 DocType = primeraEntrada.Invoices.DocType,
-                U_EXX_FE_CDC = primeraEntrada.Invoices.U_EXX_FE_CDC ?? "",
-                U_EXX_FE_Estado = primeraEntrada.Invoices.U_EXX_FE_Estado,
-                U_EXX_FE_CODERR = primeraEntrada.Invoices.U_EXX_FE_CODERR,
-                U_CDOC = primeraEntrada.Invoices.U_CDOC?.PadLeft(2, '0'),
+                U_FE_CDC = primeraEntrada.Invoices.U_FE_CDC ?? "",
+                U_FE_Estado = primeraEntrada.Invoices.U_FE_Estado,
+                U_FE_CODERR = primeraEntrada.Invoices.U_FE_CODERR,
+                U_CENT_TIPO_DOC = primeraEntrada.Invoices.U_CENT_TIPO_DOC?.PadLeft(2, '0'),
                 CardCode = primeraEntrada.Invoices.CardCode ?? "",
-                U_EST = primeraEntrada.Invoices.U_EST ?? "",
-                U_PDE = primeraEntrada.Invoices.U_PDE ?? "",
+                U_CENT_EST = primeraEntrada.Invoices.U_CENT_EST ?? "",
+                U_CENT_PE = primeraEntrada.Invoices.U_CENT_PE ?? "",
                 FolioNum = primeraEntrada.Invoices.FolioNumber ?? "",
                 DocDate = primeraEntrada.Invoices.DocDate,
                 DocTime = await ObtenerDocTimePorDocEntry(docEntry),
-                U_TIM = primeraEntrada.Invoices.U_TIM,
+                U_CENT_TIMB = primeraEntrada.Invoices.U_CENT_TIMB,
                 U_FITE = primeraEntrada.Invoices.U_FITE,
-                iTipTra = primeraEntrada.Invoices.U_EXX_FE_TipoTran,
-                iIndPres = primeraEntrada.Invoices.U_EXX_FE_IndPresencia,
+                iTipTra = primeraEntrada.Invoices.U_iTipTra,
+                iIndPres = primeraEntrada.Invoices.U_FE_IndPresencia,
                 iCondOpe = primeraEntrada.Invoices.PaymentGroupCode,
                 iCondCred = primeraEntrada.Invoices.NumberOfInstallments,
                 dTiCam = primeraEntrada.Invoices.DocRate,

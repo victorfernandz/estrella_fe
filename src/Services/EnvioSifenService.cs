@@ -553,12 +553,12 @@ public class EnvioSifenService
 
         var requestBody = new
         {
-            U_EXX_FE_CDC = cdc,
-            U_EXX_FE_Estado = estadoInternoSAP,
-            U_EXX_FE_CODERR = codigoRespuesta,
-            U_EXX_FE_DESERR = descripcionRespuesta,
-            U_EXX_FE_FECAUT = fechaAutorizacion,
-            U_EXX_FE_QR = QR
+            U_FE_CDC = cdc,
+            U_FE_Estado = estadoInternoSAP,
+            U_FE_CODERR = codigoRespuesta,
+            U_FE_DESERR = descripcionRespuesta,
+            U_FE_FECAUT = fechaAutorizacion,
+            U_LINKQR = QR
         };
 
         var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
@@ -754,9 +754,9 @@ public class EnvioSifenService
 
             var requestBody = new
             {
-                U_EXX_FE_ANULACION_ESTADO = estadoInternoSAP,
-                U_EXX_FE_ANULACION_RESP = descripcionRespuesta,
-                U_EXX_FE_ANULACION_FECHA = fechaAutorizacion
+                U_FE_ANULACION_ESTADO = estadoInternoSAP,
+                U_FE_ANULACION_RESP = descripcionRespuesta,
+                U_FE_ANULACION_FECHA = fechaAutorizacion
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");

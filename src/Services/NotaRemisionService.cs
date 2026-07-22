@@ -16,14 +16,14 @@ public class NotaRemisionService
     public async Task<List<NotaRemision>> GetNotaRemisionSinCDC()
     {
         // NOTA: se asume que ODLN ya tiene los mismos UDF de facturación electrónica que OINV/ORIN
-        // (U_EXX_FE_CDC, U_EXX_FE_Estado, U_CDOC, U_EST, U_PDE, U_TIM, U_FITE). Ajustar filtro/select si difieren.
+        // (U_FE_CDC, U_FE_Estado, U_CENT_TIPO_DOC, U_CENT_EST, U_CENT_PE, U_CENT_TIMB, U_FITE). Ajustar filtro/select si difieren.
         string queryDocumento = "$crossjoin(DeliveryNotes,BusinessPartners,Currencies) " +
-            "?$expand=DeliveryNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_EXX_FE_CDC,U_CDOC,CardCode,U_EST,U_PDE,U_TIM,U_FITE,FolioNumber,DocDate,U_EXX_FE_CODERR," +
+            "?$expand=DeliveryNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_FE_CODERR," +
             "U_NUMFC,U_TIMFC,U_NORE,Comments)," +
             "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,Phone1,Cellular,EmailAddress), " +
             "Currencies($select=Code,Name,DocumentsCode) " +
             "&$filter=DeliveryNotes/CardCode eq BusinessPartners/CardCode and " +
-            "DeliveryNotes/DocCurrency eq Currencies/Code and (DeliveryNotes/U_EXX_FE_CDC eq null or DeliveryNotes/U_EXX_FE_CDC eq '') and DeliveryNotes/U_EXX_FE_Estado eq 'NEN' and DeliveryNotes/Cancelled eq 'tNO' and " +
+            "DeliveryNotes/DocCurrency eq Currencies/Code and (DeliveryNotes/U_FE_CDC eq null or DeliveryNotes/U_FE_CDC eq '') and DeliveryNotes/U_FE_Estado eq 'NEN' and DeliveryNotes/Cancelled eq 'tNO' and " +
             "DeliveryNotes/DocDate ge '20260201' and DeliveryNotes/FolioNumber ne null";
 
         return await ProcesarConsultaNotaRemision(queryDocumento);
@@ -32,7 +32,7 @@ public class NotaRemisionService
     public async Task<List<NotaRemision>> GetNotaRemisionSinAutorizar()
     {
         string queryDocumento = "$crossjoin(DeliveryNotes,BusinessPartners,Currencies) " +
-            "?$expand=DeliveryNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_EXX_FE_CDC,U_CDOC,CardCode,U_EST,U_PDE,U_TIM,U_FITE,FolioNumber,DocDate,U_EXX_FE_Estado,U_EXX_FE_CODERR," +
+            "?$expand=DeliveryNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_FE_Estado,U_FE_CODERR," +
             "U_NUMFC,U_TIMFC,U_NORE,Comments)," +
             "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,Phone1,Cellular,EmailAddress), " +
             "Currencies($select=Code,Name,DocumentsCode) " +
@@ -40,8 +40,8 @@ public class NotaRemisionService
             "DeliveryNotes/DocCurrency eq Currencies/Code and " +
             "DeliveryNotes/FolioNumber ne null and " +
             "DeliveryNotes/DocDate ge '20260201' and " +
-            "DeliveryNotes/U_EXX_FE_Estado ne 'AUT' and DeliveryNotes/Cancelled eq 'tNO' and " +
-            "DeliveryNotes/U_EXX_FE_CDC ne null and DeliveryNotes/U_EXX_FE_CDC ne ''";
+            "DeliveryNotes/U_FE_Estado ne 'AUT' and DeliveryNotes/Cancelled eq 'tNO' and " +
+            "DeliveryNotes/U_FE_CDC ne null and DeliveryNotes/U_FE_CDC ne ''";
 
         return await ProcesarConsultaNotaRemision(queryDocumento);
     }
@@ -118,17 +118,17 @@ public class NotaRemisionService
             {
                 DocEntry = primeraEntrada.DeliveryNotes.DocEntry,
                 DocType = primeraEntrada.DeliveryNotes.DocType,
-                U_EXX_FE_CDC = primeraEntrada.DeliveryNotes.U_EXX_FE_CDC ?? "",
-                U_EXX_FE_Estado = primeraEntrada.DeliveryNotes.U_EXX_FE_Estado,
-                U_EXX_FE_CODERR = primeraEntrada.DeliveryNotes.U_EXX_FE_CODERR,
-                U_CDOC = primeraEntrada.DeliveryNotes.U_CDOC?.PadLeft(2, '0'),
+                U_FE_CDC = primeraEntrada.DeliveryNotes.U_FE_CDC ?? "",
+                U_FE_Estado = primeraEntrada.DeliveryNotes.U_FE_Estado,
+                U_FE_CODERR = primeraEntrada.DeliveryNotes.U_FE_CODERR,
+                U_CENT_TIPO_DOC = primeraEntrada.DeliveryNotes.U_CENT_TIPO_DOC?.PadLeft(2, '0'),
                 CardCode = primeraEntrada.DeliveryNotes.CardCode ?? "",
-                U_EST = primeraEntrada.DeliveryNotes.U_EST ?? "",
-                U_PDE = primeraEntrada.DeliveryNotes.U_PDE ?? "",
+                U_CENT_EST = primeraEntrada.DeliveryNotes.U_CENT_EST ?? "",
+                U_CENT_PE = primeraEntrada.DeliveryNotes.U_CENT_PE ?? "",
                 FolioNum = primeraEntrada.DeliveryNotes.FolioNumber ?? "",
                 DocDate = primeraEntrada.DeliveryNotes.DocDate,
                 DocTime = await ObtenerDocTimePorDocEntry(docEntry),
-                U_TIM = primeraEntrada.DeliveryNotes.U_TIM,
+                U_CENT_TIMB = primeraEntrada.DeliveryNotes.U_CENT_TIMB,
                 U_FITE = primeraEntrada.DeliveryNotes.U_FITE,
                 dTiCam = primeraEntrada.DeliveryNotes.DocRate,
                 U_NUMFC = primeraEntrada.DeliveryNotes.U_NUMFC,
@@ -546,7 +546,7 @@ public class NotaRemisionService
     {
         try
         {
-            string query = $"Invoices?$select=U_EXX_FE_CDC&$filter=FederalTaxID eq '{rucCompleto}' and U_EST eq '{dEstDocAso}' and U_PDE eq '{dPExpDocAso}' and FolioNumber eq {dNumDocAso} and U_TIM eq '{timbradoSAP}'";
+            string query = $"Invoices?$select=U_FE_CDC&$filter=FederalTaxID eq '{rucCompleto}' and U_CENT_EST eq '{dEstDocAso}' and U_CENT_PE eq '{dPExpDocAso}' and FolioNumber eq {dNumDocAso} and U_CENT_TIMB eq '{timbradoSAP}'";
             var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, query, _logger, "Error al obtener datos de factura referenciada");
 
             if (string.IsNullOrWhiteSpace(jsonResponse))
@@ -561,7 +561,7 @@ public class NotaRemisionService
                 return null;
 
             var factura = valueArray[0];
-            return factura.ContainsKey("U_EXX_FE_CDC") ? factura["U_EXX_FE_CDC"]?.ToString() : null;
+            return factura.ContainsKey("U_FE_CDC") ? factura["U_FE_CDC"]?.ToString() : null;
         }
         catch (Exception ex)
         {

@@ -19,7 +19,7 @@ public class EventoServiceCancelacion
 
     public async Task<List<EventoCancelacion>> GetEventoFacturaCancelada()
     {
-        string queryDocumento = "Invoices?$select=DocEntry,DocNum,U_EXX_FE_CDC,Comments,DocumentStatus,CancelStatus&$filter=Cancelled eq 'tYES' and U_EXX_FE_Estado eq 'AUT' AND U_EXX_FE_ANULACION_ESTADO eq 'NAU' and DocDate ge '20260601'";
+        string queryDocumento = "Invoices?$select=DocEntry,DocNum,U_FE_CDC,Comments,DocumentStatus,CancelStatus&$filter=Cancelled eq 'tYES' and U_FE_Estado eq 'AUT' AND U_FE_ANULACION_ESTADO eq 'NAU' and DocDate ge '20260601'";
 
         var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, queryDocumento, _logger, "Error en la consulta a SAP");
         if (string.IsNullOrEmpty(jsonResponse))
@@ -45,7 +45,7 @@ public class EventoServiceCancelacion
             var eventoCancelacion = new EventoCancelacion
             {
                 DocEntry = doc.DocEntry,
-                CDC = doc.U_EXX_FE_CDC.Trim(),
+                CDC = doc.U_FE_CDC.Trim(),
                 Motivo = doc.Comments
             };
 
@@ -57,7 +57,7 @@ public class EventoServiceCancelacion
 
     public async Task<List<EventoCancelacion>> GetEventoNotaCreditoCancelada()
     {
-        string queryDocumento = "CreditNotes?$select=DocEntry,DocNum,U_EXX_FE_CDC,Comments,DocumentStatus,CancelStatus,U_EXX_FE_Estado,U_EXX_FE_ANULACION_ESTADO,DocDate&$filter=CancelStatus eq 'csYes' and U_EXX_FE_Estado eq 'AUT' and U_EXX_FE_ANULACION_ESTADO eq 'NEN' and DocDate ge '2026-06-01'";
+        string queryDocumento = "CreditNotes?$select=DocEntry,DocNum,U_FE_CDC,Comments,DocumentStatus,CancelStatus,U_FE_Estado,U_FE_ANULACION_ESTADO,DocDate&$filter=CancelStatus eq 'csYes' and U_FE_Estado eq 'AUT' and U_FE_ANULACION_ESTADO eq 'NEN' and DocDate ge '2026-06-01'";
 
         var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, queryDocumento, _logger, "Error en la consulta a SAP");
         if (string.IsNullOrEmpty(jsonResponse))
@@ -83,7 +83,7 @@ public class EventoServiceCancelacion
             var eventoCancelacion = new EventoCancelacion
             {
                 DocEntry = doc.DocEntry,
-                CDC = doc.U_EXX_FE_CDC.Trim(),
+                CDC = doc.U_FE_CDC.Trim(),
                 Motivo = doc.Comments
             };
 
@@ -95,7 +95,7 @@ public class EventoServiceCancelacion
 
     public async Task<List<EventoCancelacion>> GetEventoNotaRemisionCancelada()
     {
-        string queryDocumento = "DeliveryNotes?$select=DocEntry,DocNum,U_EXX_FE_CDC,Comments,DocumentStatus,CancelStatus,U_EXX_FE_Estado,U_EXX_FE_ANULACION_ESTADO,DocDate&$filter=CancelStatus eq 'csYes' and U_EXX_FE_Estado eq 'AUT' and U_EXX_FE_ANULACION_ESTADO eq 'NEN' and DocDate ge '2026-06-01'";
+        string queryDocumento = "DeliveryNotes?$select=DocEntry,DocNum,U_FE_CDC,Comments,DocumentStatus,CancelStatus,U_FE_Estado,U_FE_ANULACION_ESTADO,DocDate&$filter=CancelStatus eq 'csYes' and U_FE_Estado eq 'AUT' and U_FE_ANULACION_ESTADO eq 'NEN' and DocDate ge '2026-06-01'";
 
         var jsonResponse = await HttpHelper.GetStringAsync(_httpClient, queryDocumento, _logger, "Error en la consulta a SAP");
         if (string.IsNullOrEmpty(jsonResponse))
@@ -121,7 +121,7 @@ public class EventoServiceCancelacion
             var eventoCancelacion = new EventoCancelacion
             {
                 DocEntry = doc.DocEntry,
-                CDC = doc.U_EXX_FE_CDC.Trim(),
+                CDC = doc.U_FE_CDC.Trim(),
                 Motivo = doc.Comments
             };
 
