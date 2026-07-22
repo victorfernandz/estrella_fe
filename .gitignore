@@ -1,0 +1,34 @@
+# VS Code
+.vscode/
+*.code-workspace
+
+# .NET build
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Publish (CLAVE en tu caso)
+publish/
+publish-win/
+
+# Binarios
+*.dll
+*.exe
+*.pdb
+*.deps.json
+*.runtimeconfig.json
+*.dylib
+
+# Config sensible
+config.json
+*.pfx
+.env
+
+# Otros
+*.log
+.DS_Store
+
+# Python (si realmente lo usás)
+web/__pycache__/
+web/db.sqlite3
