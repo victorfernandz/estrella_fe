@@ -359,15 +359,15 @@ public class SAPCDCService : BackgroundService
                 string docType = factura.DocType;
                 string rucCompleto = factura.BusinessPartner.FederalTaxID;
                 string[] rucPartes = rucCompleto.Split('-');
-                int U_CRSI = factura.BusinessPartner.iNatRec == "CONTRIBUYENTE" ? 1 : 2;
-                int U_TIPCONT = factura.BusinessPartner.iTiContRec;
-                int U_EXX_FE_TipoOperacion = factura.BusinessPartner.iTiOpe;
+                int U_CENT_SITUACION = factura.BusinessPartner.iNatRec == "CONTRIBUYENTE" ? 1 : 2;
+                int U_CENT_TIP_SN = factura.BusinessPartner.iTiContRec;
+                int U_CENT_TIP_OPE = factura.BusinessPartner.iTiOpe;
                 string? dRucReceptor = "";
                 int? dDVReceptor = null;
                 string? iTipIDRec = null;
                 string? dNumIDRec = null;
 
-                if (U_CRSI == 1)
+                if (U_CENT_SITUACION == 1)
                 {
                     dRucReceptor = rucPartes.Length > 0 ? rucPartes[0] : "";//.PadLeft(8, '0') : "00000000";
                     dDVReceptor = rucPartes.Length > 1 ? int.Parse(rucPartes[1]) : 0;
@@ -560,8 +560,8 @@ public class SAPCDCService : BackgroundService
 
                 GenerarXML.SerializarDocumentoElectronico(ActiveSapConfig.Sifen, cdc, dv, dFecFirma, rutaXml, dCodSeg, xmlTiDE, dNumTim, dEst, dPunExp, dNumDoc, dFeIniT, dFeEmiDE, iTipTra, cMoneOpe, dDesMoneOpe, _empresaInfo.Ruc,
                     _empresaInfo.Dv, _empresaInfo.TipoContribuyente, _empresaInfo.NombreEmpresa, _empresaInfo.DireccionEmisor, _empresaInfo.NumeroCasaEmisor, _empresaInfo.CodDepartamento, _empresaInfo.DescDepartamento,
-                    _empresaInfo.CodDistrito, _empresaInfo.DescDistrito, _empresaInfo.CodLocalidad, _empresaInfo.DescLocalidad, _empresaInfo.TelefEmisor, _empresaInfo.EmailEmisor, U_CRSI, U_TIPCONT, dDirRec, dNumCasRec,
-                    U_EXX_FE_TipoOperacion, Country, DescPais, CardName, dRucReceptor, dDVReceptor, dTelRec, dCelRec, dEmailRec,
+                    _empresaInfo.CodDistrito, _empresaInfo.DescDistrito, _empresaInfo.CodLocalidad, _empresaInfo.DescLocalidad, _empresaInfo.TelefEmisor, _empresaInfo.EmailEmisor, U_CENT_SITUACION, U_CENT_TIP_SN, dDirRec, dNumCasRec,
+                    U_CENT_TIP_OPE, Country, DescPais, CardName, dRucReceptor, dDVReceptor, dTelRec, dCelRec, dEmailRec,
                     dTiCam, iIndPres, iCondOpe, iCondCred, iTiPago, dMonTiPag, cMoneTiPag, dDMoneTiPag, dTiCamTiPag, iTipIDRec, dNumIDRec,
                     _empresaInfo.ActividadesEconomicas, _empresaInfo.ObligacionesAfectadas, cuotasList, itemsList, plazoCredito, totalesFactura, certificadoBytes, contraseñaCertificado);
 
@@ -760,9 +760,9 @@ public class SAPCDCService : BackgroundService
                 string docType = notaCredito.DocType;
                 string rucCompleto = notaCredito.BusinessPartner.FederalTaxID;
                 string[] rucPartes = rucCompleto.Split('-');
-                int U_CRSI = notaCredito.BusinessPartner.iNatRec == "CONTRIBUYENTE" ? 1 : 2;
-                int U_TIPCONT = notaCredito.BusinessPartner.iTiContRec;
-                int U_EXX_FE_TipoOperacion = notaCredito.BusinessPartner.iTiOpe;
+                int U_CENT_SITUACION = notaCredito.BusinessPartner.iNatRec == "CONTRIBUYENTE" ? 1 : 2;
+                int U_CENT_TIP_SN = notaCredito.BusinessPartner.iTiContRec;
+                int U_CENT_TIP_OPE = notaCredito.BusinessPartner.iTiOpe;
                 string? dRucReceptor = "";
                 int? dDVReceptor = null;
                 string? dTelRec = notaCredito.BusinessPartner.dTelRec;
@@ -771,7 +771,7 @@ public class SAPCDCService : BackgroundService
                 string? iTipIDRec = null;
                 string? dNumIDRec = null;
 
-                if (U_CRSI == 1)
+                if (U_CENT_SITUACION == 1)
                 {
                     dRucReceptor = rucPartes.Length > 0 ? rucPartes[0] : "";//.PadLeft(8, '0') : "00000000";
                     dDVReceptor = rucPartes.Length > 1 ? int.Parse(rucPartes[1]) : 0;
@@ -987,8 +987,8 @@ public class SAPCDCService : BackgroundService
 
                 GenerarXML.SerializarDocumentoElectronico(ActiveSapConfig.Sifen, cdc, dv, dFecFirma, rutaXml, dCodSeg, xmlTiDE, dNumTim, dEst, dPunExp, dNumDoc, dFeIniT, dFeEmiDE, iTipTra, cMoneOpe, dDesMoneOpe, _empresaInfo.Ruc,
                     _empresaInfo.Dv, _empresaInfo.TipoContribuyente, _empresaInfo.NombreEmpresa, _empresaInfo.DireccionEmisor, _empresaInfo.NumeroCasaEmisor, _empresaInfo.CodDepartamento, _empresaInfo.DescDepartamento,
-                    _empresaInfo.CodDistrito, _empresaInfo.DescDistrito, _empresaInfo.CodLocalidad, _empresaInfo.DescLocalidad, _empresaInfo.TelefEmisor, _empresaInfo.EmailEmisor, U_CRSI, U_TIPCONT, dDirRec, dNumCasRec,
-                    U_EXX_FE_TipoOperacion, Country, DescPais, CardName, dRucReceptor, dDVReceptor, dTelRec, dCelRec, dEmailRec,
+                    _empresaInfo.CodDistrito, _empresaInfo.DescDistrito, _empresaInfo.CodLocalidad, _empresaInfo.DescLocalidad, _empresaInfo.TelefEmisor, _empresaInfo.EmailEmisor, U_CENT_SITUACION, U_CENT_TIP_SN, dDirRec, dNumCasRec,
+                    U_CENT_TIP_OPE, Country, DescPais, CardName, dRucReceptor, dDVReceptor, dTelRec, dCelRec, dEmailRec,
                     dTiCam, iIndPres, iCondOpe, iCondCred, iTiPago, dMonTiPag, cMoneTiPag, dDMoneTiPag, dTiCamTiPag, iTipIDRec, dNumIDRec,
                     _empresaInfo.ActividadesEconomicas, _empresaInfo.ObligacionesAfectadas, cuotasList, itemsList, plazoCredito, totalesFactura, certificadoBytes, contraseñaCertificado,
                     iMotEmi, dCdCDERef, dFecEmiDI, dNTimDI, dEstDocAso, dPExpDocAso, dNumDocAso, iTipDocAso, iTipoDocAso);
@@ -1711,15 +1711,15 @@ public class SAPCDCService : BackgroundService
             {
                 string rucCompleto = notaRemision.BusinessPartner.FederalTaxID;
                 string[] rucPartes = rucCompleto.Split('-');
-                int U_CRSI = notaRemision.BusinessPartner.iNatRec == "CONTRIBUYENTE" ? 1 : 2;
-                int U_TIPCONT = notaRemision.BusinessPartner.iTiContRec;
-                int U_EXX_FE_TipoOperacion = notaRemision.BusinessPartner.iTiOpe;
+                int U_CENT_SITUACION = notaRemision.BusinessPartner.iNatRec == "CONTRIBUYENTE" ? 1 : 2;
+                int U_CENT_TIP_SN = notaRemision.BusinessPartner.iTiContRec;
+                int U_CENT_TIP_OPE = notaRemision.BusinessPartner.iTiOpe;
                 string? dRucReceptor = "";
                 int? dDVReceptor = null;
                 string? iTipIDRec = null;
                 string? dNumIDRec = null;
 
-                if (U_CRSI == 1)
+                if (U_CENT_SITUACION == 1)
                 {
                     dRucReceptor = rucPartes.Length > 0 ? rucPartes[0] : "";
                     dDVReceptor = rucPartes.Length > 1 ? int.Parse(rucPartes[1]) : 0;
@@ -1827,11 +1827,11 @@ public class SAPCDCService : BackgroundService
                     dDesCiuEmi: _empresaInfo.DescLocalidad,
                     dTelEmi: _empresaInfo.TelefEmisor,
                     dEmailE: _empresaInfo.EmailEmisor,
-                    iNatRec: U_CRSI,
-                    iTiContRec: U_TIPCONT,
+                    iNatRec: U_CENT_SITUACION,
+                    iTiContRec: U_CENT_TIP_SN,
                     dDirRec: dDirRec,
                     dNumCasRec: dNumCasRec,
-                    iTiOpe: U_EXX_FE_TipoOperacion,
+                    iTiOpe: U_CENT_TIP_OPE,
                     cPaisRec: Country,
                     dDesPaisRe: DescPais,
                     dNomRec: CardName,

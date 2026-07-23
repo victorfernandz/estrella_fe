@@ -20,7 +20,7 @@ public class NotaRemisionService
         string queryDocumento = "$crossjoin(DeliveryNotes,BusinessPartners,Currencies) " +
             "?$expand=DeliveryNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_FE_CODERR," +
             "U_NUMFC,U_TIMFC,U_NORE,Comments)," +
-            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,Phone1,Cellular,EmailAddress), " +
+            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_CENT_TIP_SN,U_CENT_SITUACION,U_CENT_TIP_OPE,Phone1,Cellular,EmailAddress), " +
             "Currencies($select=Code,Name,DocumentsCode) " +
             "&$filter=DeliveryNotes/CardCode eq BusinessPartners/CardCode and " +
             "DeliveryNotes/DocCurrency eq Currencies/Code and (DeliveryNotes/U_FE_CDC eq null or DeliveryNotes/U_FE_CDC eq '') and DeliveryNotes/U_FE_Estado eq 'NEN' and DeliveryNotes/Cancelled eq 'tNO' and " +
@@ -34,7 +34,7 @@ public class NotaRemisionService
         string queryDocumento = "$crossjoin(DeliveryNotes,BusinessPartners,Currencies) " +
             "?$expand=DeliveryNotes($select=DocEntry,DocType,DocRate,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_FE_Estado,U_FE_CODERR," +
             "U_NUMFC,U_TIMFC,U_NORE,Comments)," +
-            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,Phone1,Cellular,EmailAddress), " +
+            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_CENT_TIP_SN,U_CENT_SITUACION,U_CENT_TIP_OPE,Phone1,Cellular,EmailAddress), " +
             "Currencies($select=Code,Name,DocumentsCode) " +
             "&$filter=DeliveryNotes/CardCode eq BusinessPartners/CardCode and " +
             "DeliveryNotes/DocCurrency eq Currencies/Code and " +
@@ -140,9 +140,9 @@ public class NotaRemisionService
                     CardCode = primeraEntrada.BusinessPartners.CardCode ?? "",
                     dNomRec = primeraEntrada.BusinessPartners.CardName ?? "",
                     FederalTaxID = primeraEntrada.BusinessPartners.FederalTaxID ?? "",
-                    iTiContRec = primeraEntrada.BusinessPartners.U_TIPCONT ?? 0,
-                    iTiOpe = primeraEntrada.BusinessPartners.U_EXX_FE_TipoOperacion,
-                    iNatRec = primeraEntrada.BusinessPartners.U_CRSI ?? "",
+                    iTiContRec = primeraEntrada.BusinessPartners.U_CENT_TIP_SN ?? 0,
+                    iTiOpe = primeraEntrada.BusinessPartners.U_CENT_TIP_OPE,
+                    iNatRec = primeraEntrada.BusinessPartners.U_CENT_SITUACION ?? "",
                     cPaisRec = codigoReportePais ?? "",
                     dDesPaisRe = descripcionPais,
                     dDirRec = street,

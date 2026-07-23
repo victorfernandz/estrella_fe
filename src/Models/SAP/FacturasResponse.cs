@@ -52,10 +52,10 @@ public class BusinessPartnerData
     public string EmailAddress { get; set; }
     public string Phone1 { get; set; }
     public string Cellular { get; set;}
-    public int? U_TIPCONT { get; set; } // Tipo Contribuyente
-    public string U_CRSI { get; set; }  // Naturaleza del SN
-    public string U_CRID { get; set; } // Tipo identificación
-    public int U_EXX_FE_TipoOperacion { get; set; }
+    public int? U_CENT_TIP_SN { get; set; } // Tipo Contribuyente
+    public string U_CENT_SITUACION { get; set; }  // Naturaleza del SN
+    public string U_CENT_IDENT_TIPO { get; set; } // Tipo identificación
+    public int U_CENT_TIP_OPE { get; set; }
 
     public List<BPAddressInfo> BPAddresses { get; set; }
 

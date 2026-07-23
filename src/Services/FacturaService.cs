@@ -18,7 +18,7 @@ public class FacturaService
         string queryDocumento = "$crossjoin(Invoices,BusinessPartners,Currencies)" +
             "?$expand=Invoices($select=DocEntry,DocRate,DocType,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_iTipTra,U_FE_IndPresencia,PaymentGroupCode," +
             "NumberOfInstallments,Comments)," +
-            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,U_CRID,Phone1,Cellular,EmailAddress)," +
+            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_CENT_TIP_SN,U_CENT_SITUACION,U_CENT_TIP_OPE,U_CENT_IDENT_TIPO,Phone1,Cellular,EmailAddress)," +
             "Currencies($select=Code,Name,DocumentsCode)" +
             "&$filter=Invoices/CardCode eq BusinessPartners/CardCode and " +
             "Invoices/DocCurrency eq Currencies/Code and " +
@@ -127,10 +127,10 @@ public class FacturaService
                     CardCode = primeraEntrada.BusinessPartners.CardCode ?? "",
                     dNomRec = primeraEntrada.BusinessPartners.CardName ?? "",
                     FederalTaxID = primeraEntrada.BusinessPartners.FederalTaxID ?? "",
-                    iTiContRec = primeraEntrada.BusinessPartners.U_TIPCONT ?? 0,
-                    iTiOpe = primeraEntrada.BusinessPartners.U_EXX_FE_TipoOperacion,
-                    iNatRec = primeraEntrada.BusinessPartners.U_CRSI ?? "",
-                    iTipIDRec = primeraEntrada.BusinessPartners.U_CRID,
+                    iTiContRec = primeraEntrada.BusinessPartners.U_CENT_TIP_SN ?? 0,
+                    iTiOpe = primeraEntrada.BusinessPartners.U_CENT_TIP_OPE,
+                    iNatRec = primeraEntrada.BusinessPartners.U_CENT_SITUACION ?? "",
+                    iTipIDRec = primeraEntrada.BusinessPartners.U_CENT_IDENT_TIPO,
                     cPaisRec = codigoReportePais ?? "",
                     dDesPaisRe = descripcionPais,
                     dDirRec = street,
@@ -630,7 +630,7 @@ public class FacturaService
         string queryDocumento = "$crossjoin(Invoices,BusinessPartners,Currencies)" +
             "?$expand=Invoices($select=DocEntry,DocRate,DocType,DocCurrency,U_FE_CDC,U_CENT_TIPO_DOC,CardCode,U_FE_Estado,U_CENT_EST,U_CENT_PE,U_CENT_TIMB,U_FITE,FolioNumber,DocDate,U_iTipTra,U_FE_IndPresencia,PaymentGroupCode," +
             "NumberOfInstallments,U_FE_CODERR,Comments)," +
-            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_TIPCONT,U_CRSI,U_EXX_FE_TipoOperacion,U_CRID,Phone1,Cellular,EmailAddress)," +
+            "BusinessPartners($select=CardCode,CardName,FederalTaxID,U_CENT_TIP_SN,U_CENT_SITUACION,U_CENT_TIP_OPE,U_CENT_IDENT_TIPO,Phone1,Cellular,EmailAddress)," +
             "Currencies($select=Code,Name,DocumentsCode)" +
             "&$filter=Invoices/CardCode eq BusinessPartners/CardCode and " +
             "Invoices/DocCurrency eq Currencies/Code and " +
@@ -743,10 +743,10 @@ public class FacturaService
                     CardCode = primeraEntrada.BusinessPartners.CardCode ?? "",
                     dNomRec = primeraEntrada.BusinessPartners.CardName ?? "",
                     FederalTaxID = primeraEntrada.BusinessPartners.FederalTaxID ?? "",
-                    iTiContRec = primeraEntrada.BusinessPartners.U_TIPCONT ?? 0,
-                    iTiOpe = primeraEntrada.BusinessPartners.U_EXX_FE_TipoOperacion,
-                    iNatRec = primeraEntrada.BusinessPartners.U_CRSI ?? "",
-                    iTipIDRec = primeraEntrada.BusinessPartners.U_CRID,
+                    iTiContRec = primeraEntrada.BusinessPartners.U_CENT_TIP_SN ?? 0,
+                    iTiOpe = primeraEntrada.BusinessPartners.U_CENT_TIP_OPE,
+                    iNatRec = primeraEntrada.BusinessPartners.U_CENT_SITUACION ?? "",
+                    iTipIDRec = primeraEntrada.BusinessPartners.U_CENT_IDENT_TIPO,
                     cPaisRec = codigoReportePais ?? "",
                     dDesPaisRe = descripcionPais,
                     dDirRec = street,
